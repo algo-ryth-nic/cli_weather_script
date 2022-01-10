@@ -4,6 +4,9 @@ import argparse
 import pickle
 import os
 
+# for debugging
+from pprint import pprint
+
 
 # create a cli that shows the current weather of a city 
 parser = argparse.ArgumentParser()
@@ -31,3 +34,25 @@ else:
 
 
 
+def get_weather(city):
+    # get the weather for the given city
+    url = "http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}".format(city.lower(), cred['key'])
+    r = requests.get(url)
+    content = r.json()
+    
+    # debugging 
+    pprint(r.json())
+    
+    # print(r.status_code)
+    if r.status_code == 200:
+        # request is successful, return the weather
+        return content
+    else:
+        print(content['message'])
+        return None
+
+
+data = get_weather(args.city)
+# create message 
+if data is not None:
+    message = "The weather in {} is {} with a temperature of {} degrees Celsius".format(args.city, data['weather'][0]['description'], data['main']['temp'])
